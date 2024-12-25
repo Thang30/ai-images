@@ -3,8 +3,9 @@ const nextConfig = {
   images: {
     domains: [
       'images.ctfassets.net',
-      'storage.example.com',
-      'files.tigris.dev'
+      'storage.example.com', 
+      'files.tigris.dev',
+      'picsum.photos'
     ],
   },
 }
