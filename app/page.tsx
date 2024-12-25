@@ -4,6 +4,7 @@ import { db, ImagesTable } from '@/lib/drizzle'
 import { getCurrentUser } from '@/lib/auth'
 import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
+import { Hero } from '@/components/Hero'
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
@@ -24,9 +25,11 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen flex flex-col">
+      <Hero />
+      
       {/* Main Content */}
       <div className="flex-grow p-8 max-w-7xl mx-auto w-full">
-        <h1 className="text-3xl font-bold mb-8">Generated Images</h1>
+        <h2 className="text-3xl font-bold mb-8">Your Generated Images</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {images.map((image) => (
