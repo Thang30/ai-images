@@ -13,6 +13,7 @@ A Next.js 15 application for generating and sharing AI-powered images using Verc
 - 📱 Responsive Design
 
 ![Gallery View](./public/screenshots/gallery.png)
+![Generate View](./public/screenshots/generate.png)
 
 ## Tech Stack
 
