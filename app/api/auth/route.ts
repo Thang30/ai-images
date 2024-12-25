@@ -7,6 +7,7 @@ import { verifyPassword, hashPassword } from '@/lib/auth'
 export async function POST(request: Request) {
   try {
     const { email, password, action } = await request.json()
+    const cookieStore = await cookies()
 
     if (action === 'login') {
       const [user] = await db
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
         )
       }
 
-      (await cookies()).set('user_email', user.email, {
+      cookieStore.set('user_email', user.email, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -66,7 +67,7 @@ export async function POST(request: Request) {
     }
 
     if (action === 'logout') {
-      (await cookies()).delete('user_email')
+      cookieStore.delete('user_email')
       return NextResponse.json({ success: true })
     }
 

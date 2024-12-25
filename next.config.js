@@ -49,6 +49,11 @@ const nextConfig = {
     }
     return config
   },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['localhost:3000', 'your-production-domain.com'],
+    },
+  },
 }
 
 module.exports = nextConfig

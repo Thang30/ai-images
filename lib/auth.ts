@@ -38,6 +38,7 @@ export async function getCurrentUser(): Promise<User | null> {
     
     return user || null
   } catch (error) {
+    // Log error but don't throw to prevent build errors
     console.error('Get current user error:', error)
     return null
   }

@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: 'View your generated AI images',
 }
 
+export const dynamic = 'force-dynamic'
+
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
 export default async function GalleryPage({
