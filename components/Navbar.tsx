@@ -14,13 +14,20 @@ export async function Navbar() {
           <ExpandingArrow className="h-4 w-4" />
         </Link>
         <div className="flex items-center space-x-6">
-          <Link 
-            href="/generate" 
-            className="text-gray-600 hover:text-black flex items-center gap-2"
-          >
-            Generate
-            <ExpandingArrow className="h-3 w-3" />
-          </Link>
+          {currentUser && (
+            <>
+              <span className="text-sm text-gray-600">
+                Credits: {currentUser.credits}
+              </span>
+              <Link 
+                href="/generate" 
+                className="text-gray-600 hover:text-black flex items-center gap-2"
+              >
+                Generate
+                <ExpandingArrow className="h-3 w-3" />
+              </Link>
+            </>
+          )}
           <Link 
             href="/gallery" 
             className="text-gray-600 hover:text-black flex items-center gap-2"

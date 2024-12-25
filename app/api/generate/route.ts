@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
-import { db, ImagesTable } from '@/lib/drizzle'
+import { db, ImagesTable, UsersTable } from '@/lib/drizzle'
+import { eq } from 'drizzle-orm'
 
 // Mock function to simulate image generation
 function getMockImageUrl(width: number, height: number): string {
@@ -14,13 +15,21 @@ function getMockImageUrl(width: number, height: number): string {
 
 export async function POST(request: Request) {
   try {
-    const user = await getCurrentUser()
+    const currentUser = await getCurrentUser()
     
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    if (!currentUser) {
+      return new Response('Unauthorized', { status: 401 })
+    }
+
+    // Check if user has credits
+    const [user] = await db
+      .select()
+      .from(UsersTable)
+      .where(eq(UsersTable.id, currentUser.id))
+      .limit(1)
+
+    if (!user || user.credits <= 0) {
+      return new Response('Insufficient credits', { status: 403 })
     }
 
     const { prompt, negative_prompt, width, height } = await request.json()
@@ -36,20 +45,36 @@ export async function POST(request: Request) {
     // Generate mock image URL
     const image_url = getMockImageUrl(width, height)
 
-    // Save to database
-    const [newImage] = await db
-      .insert(ImagesTable)
-      .values({
-        user_id: user.id,
-        prompt,
-        negative_prompt,
-        width,
-        height,
-        image_url,
-      })
-      .returning()
+    // Use a transaction to ensure both operations succeed or fail together
+    const result = await db.transaction(async (tx) => {
+      // Deduct credit first
+      const [updatedUser] = await tx
+        .update(UsersTable)
+        .set({ credits: user.credits - 1 })
+        .where(eq(UsersTable.id, currentUser.id))
+        .returning()
 
-    return NextResponse.json({ image: newImage })
+      if (!updatedUser) {
+        throw new Error('Failed to update credits')
+      }
+
+      // Then create the image
+      const [newImage] = await tx
+        .insert(ImagesTable)
+        .values({
+          user_id: currentUser.id,
+          prompt,
+          negative_prompt,
+          width,
+          height,
+          image_url,
+        })
+        .returning()
+
+      return { user: updatedUser, image: newImage }
+    })
+
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Generate error:', error)
     return NextResponse.json(
