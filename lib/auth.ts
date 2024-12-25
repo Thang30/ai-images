@@ -19,8 +19,8 @@ export async function verifyPassword(password: string, hashedPassword: string) {
 
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    const cookieStore = cookies()
-    const userEmail = await cookieStore.get('user_email')?.value
+    const cookieStore = await cookies()
+    const userEmail = cookieStore.get('user_email')?.value
     
     if (!userEmail) {
       return null

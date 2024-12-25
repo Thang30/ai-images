@@ -4,11 +4,13 @@ import { getCurrentUser } from '@/lib/auth'
 import { desc, eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
 
+interface GalleryPageProps {
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
 export default async function GalleryPage({
   searchParams,
-}: {
-  searchParams: { new?: string }
-}) {
+}: GalleryPageProps) {
   const currentUser = await getCurrentUser()
   
   if (!currentUser) {
@@ -22,6 +24,10 @@ export default async function GalleryPage({
     .orderBy(desc(ImagesTable.created_at))
     .limit(20)
 
+  // Handle searchParams safely
+  const params = await Promise.resolve(searchParams)
+  const newImageId = typeof params?.new === 'string' ? params.new : undefined
+
   return (
     <div className="flex-grow p-8 max-w-7xl mx-auto w-full">
       <h1 className="text-3xl font-bold mb-8">Gallery</h1>
@@ -32,7 +38,7 @@ export default async function GalleryPage({
             key={image.id} 
             className="bg-white rounded-lg overflow-hidden shadow-sm relative"
           >
-            {searchParams.new === image.id && (
+            {newImageId === image.id && (
               <div className="absolute top-4 right-4 z-10">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                   Newly Generated

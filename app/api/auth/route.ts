@@ -31,7 +31,7 @@ export async function POST(request: Request) {
         )
       }
 
-      cookies().set('user_email', user.email, {
+      (await cookies()).set('user_email', user.email, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     }
 
     if (action === 'logout') {
-      cookies().delete('user_email')
+      (await cookies()).delete('user_email')
       return NextResponse.json({ success: true })
     }
 

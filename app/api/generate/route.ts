@@ -77,12 +77,12 @@ export async function POST(request: Request) {
       pollInterval: 1000,
       logs: true,
       onQueueUpdate(update) {
-        if (update.status === 'FAILED') {
-          console.error('Queue update failed:', update)
-        } else {
+        if (update.status === "IN_QUEUE" || update.status === "IN_PROGRESS" || update.status === "COMPLETED") {
           console.log('Queue update:', update.status)
+        } else {
+          console.error('Queue update failed:', update)
         }
-      },
+      }
     })
 
     console.log('FAL response:', result)
