@@ -1,40 +1,15 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Suspense } from 'react'
 import { db, ImagesTable } from '@/lib/drizzle'
-import { getCurrentUser } from '@/lib/auth'
-import { LogoutButton } from '@/components/LogoutButton'
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-  const currentUser = await getCurrentUser()
   const images = await db.select().from(ImagesTable).orderBy(ImagesTable.created_at)
 
   return (
     <main className="min-h-screen flex flex-col">
-      {/* Navigation */}
-      <nav className="w-full p-4 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold">AI Images</Link>
-          <div className="space-x-4">
-            <Link href="/generate" className="text-gray-600 hover:text-black">Generate</Link>
-            <Link href="/gallery" className="text-gray-600 hover:text-black">Gallery</Link>
-            {currentUser ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-gray-600">{currentUser.email}</span>
-                <LogoutButton />
-              </div>
-            ) : (
-              <Link href="/auth" className="text-gray-600 hover:text-black">
-                Sign In
-              </Link>
-            )}
-          </div>
-        </div>
-      </nav>
-
       {/* Main Content */}
       <div className="flex-grow p-8 max-w-7xl mx-auto w-full">
         <h1 className="text-3xl font-bold mb-8">Generated Images</h1>
