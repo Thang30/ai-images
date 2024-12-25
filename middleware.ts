@@ -9,8 +9,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url))
   }
   
-  // Protect generate route
-  if (!userEmail && request.nextUrl.pathname.startsWith('/generate')) {
+  // Protect all image-related routes
+  if (!userEmail && (
+    request.nextUrl.pathname === '/' ||
+    request.nextUrl.pathname.startsWith('/generate') ||
+    request.nextUrl.pathname.startsWith('/gallery')
+  )) {
     return NextResponse.redirect(new URL('/auth', request.url))
   }
   
@@ -18,5 +22,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/generate/:path*', '/auth']
+  matcher: ['/', '/generate/:path*', '/gallery/:path*', '/auth']
 } 

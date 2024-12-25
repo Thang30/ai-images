@@ -1,12 +1,26 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { db, ImagesTable } from '@/lib/drizzle'
+import { getCurrentUser } from '@/lib/auth'
+import { eq } from 'drizzle-orm'
+import { redirect } from 'next/navigation'
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-  const images = await db.select().from(ImagesTable).orderBy(ImagesTable.created_at)
+  const currentUser = await getCurrentUser()
+  
+  // Redirect to auth if not logged in
+  if (!currentUser) {
+    redirect('/auth')
+  }
+
+  const images = await db
+    .select()
+    .from(ImagesTable)
+    .where(eq(ImagesTable.user_id, currentUser.id))
+    .orderBy(ImagesTable.created_at)
 
   return (
     <main className="min-h-screen flex flex-col">

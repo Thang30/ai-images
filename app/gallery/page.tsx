@@ -1,11 +1,21 @@
 import Image from 'next/image'
 import { db, ImagesTable } from '@/lib/drizzle'
-import { desc } from 'drizzle-orm'
+import { getCurrentUser } from '@/lib/auth'
+import { desc, eq } from 'drizzle-orm'
+import { redirect } from 'next/navigation'
 
 export default async function GalleryPage() {
+  const currentUser = await getCurrentUser()
+  
+  // Redirect to auth if not logged in
+  if (!currentUser) {
+    redirect('/auth')
+  }
+
   const images = await db
     .select()
     .from(ImagesTable)
+    .where(eq(ImagesTable.user_id, currentUser.id))
     .orderBy(desc(ImagesTable.created_at))
     .limit(20)
 
