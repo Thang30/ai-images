@@ -4,11 +4,11 @@ A Next.js 15 application for generating and sharing AI-powered images using Verc
 
 ## Features
 
-- 🎨 AI Image Generation with FAL.ai
-- 🔐 User Authentication
-- 💳 Credit System
-- 🖼️ Personal Image Gallery
-- 📱 Responsive Design
+- AI Image Generation with FAL.ai
+- User Authentication
+- Credit System
+- Personal Image Gallery
+- Responsive Design
 
 ![Gallery View](./public/screenshots/gallery.png)
 ![Generate View](./public/screenshots/generate.png)
@@ -77,3 +77,7 @@ AWS_ENDPOINT_URL_S3=your_aws_endpoint_url_s3
 AWS_ENDPOINT_URL_IAM=your_aws_endpoint_url_iam
 AWS_REGION=your_aws_region
 ```
+
+## License
+
+MIT License
