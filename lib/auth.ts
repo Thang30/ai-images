@@ -18,19 +18,27 @@ export async function verifyPassword(password: string, hashedPassword: string) {
 }
 
 export async function getCurrentUser(): Promise<User | null> {
-  const userEmail = cookies().get('user_email')?.value
-  
-  if (!userEmail) return null
-  
-  const [user] = await db
-    .select({
-      id: UsersTable.id,
-      email: UsersTable.email,
-      credits: UsersTable.credits
-    })
-    .from(UsersTable)
-    .where(eq(UsersTable.email, userEmail))
-    .limit(1)
-  
-  return user || null
+  try {
+    const cookieStore = cookies()
+    const userEmail = await cookieStore.get('user_email')?.value
+    
+    if (!userEmail) {
+      return null
+    }
+    
+    const [user] = await db
+      .select({
+        id: UsersTable.id,
+        email: UsersTable.email,
+        credits: UsersTable.credits
+      })
+      .from(UsersTable)
+      .where(eq(UsersTable.email, userEmail))
+      .limit(1)
+    
+    return user || null
+  } catch (error) {
+    console.error('Get current user error:', error)
+    return null
+  }
 } 

@@ -2,23 +2,27 @@ import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
 import { db, ImagesTable, UsersTable } from '@/lib/drizzle'
 import { eq } from 'drizzle-orm'
+import { fal } from "@fal-ai/client"
 
-// Mock function to simulate image generation
-function getMockImageUrl(width: number, height: number): string {
-  const imageIds = [
-    '1', '2', '3', '4', '5',
-    '6', '7', '8', '9', '10'
-  ]
-  const randomId = imageIds[Math.floor(Math.random() * imageIds.length)]
-  return `https://picsum.photos/id/${randomId}/${width}/${height}`
+if (!process.env.FAL_KEY) {
+  throw new Error('FAL_KEY environment variable is not set')
 }
+
+// Configure fal client with the correct credentials format
+fal.config({
+  proxyUrl: "/api/fal/proxy",
+  credentials: process.env.FAL_KEY,
+})
 
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser()
     
     if (!currentUser) {
-      return new Response('Unauthorized', { status: 401 })
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
     }
 
     // Check if user has credits
@@ -42,11 +46,39 @@ export async function POST(request: Request) {
       )
     }
 
-    // Generate mock image URL
-    const image_url = getMockImageUrl(width, height)
+    // Generate image using FAL.ai
+    const result = await fal.subscribe("110602490-lora", {
+      input: {
+        prompt,
+        negative_prompt: negative_prompt || "",
+        model_name: "stabilityai/stable-diffusion-xl-base-1.0",
+        image_size: width === height ? "square_hd" : "landscape_16_9",
+        num_inference_steps: 30,
+        guidance_scale: 7.5,
+        seed: Math.floor(Math.random() * 2147483647),
+      },
+      pollInterval: 1000,
+      logs: true,
+      onQueueUpdate(update) {
+        if (update.status === 'FAILED') {
+          console.error('Queue update failed:', update)
+        } else {
+          console.log('Queue update:', update.status)
+        }
+      },
+    })
+
+    console.log('FAL response:', result)
+
+    // Extract image URL from the correct response structure
+    const imageUrl = result.data?.images?.[0]?.url
+
+    if (!imageUrl) {
+      throw new Error('No image URL in response: ' + JSON.stringify(result))
+    }
 
     // Use a transaction to ensure both operations succeed or fail together
-    const result = await db.transaction(async (tx) => {
+    const dbResult = await db.transaction(async (tx) => {
       // Deduct credit first
       const [updatedUser] = await tx
         .update(UsersTable)
@@ -67,18 +99,21 @@ export async function POST(request: Request) {
           negative_prompt,
           width,
           height,
-          image_url,
+          image_url: imageUrl,
         })
         .returning()
 
       return { user: updatedUser, image: newImage }
     })
 
-    return NextResponse.json(result)
+    return NextResponse.json(dbResult)
   } catch (error) {
     console.error('Generate error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: error instanceof Error ? error.message : 'Internal server error',
+        details: error instanceof Error ? error.stack : undefined
+      },
       { status: 500 }
     )
   }

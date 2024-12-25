@@ -5,7 +5,10 @@ const nextConfig = {
       'images.ctfassets.net',
       'storage.example.com', 
       'files.tigris.dev',
-      'picsum.photos'
+      'picsum.photos',
+      'fal.ai',
+      'cdn.fal.ai',
+      'fal.media'
     ],
   },
 }
