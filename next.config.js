@@ -37,6 +37,14 @@ const nextConfig = {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         crypto: require.resolve('crypto-browserify'),
+        stream: require.resolve('stream-browserify'),
+        buffer: require.resolve('buffer'),
+        util: require.resolve('util'),
+        process: require.resolve('process/browser'),
+      }
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        process: 'process/browser',
       }
     }
     return config

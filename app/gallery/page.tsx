@@ -3,14 +3,20 @@ import { db, ImagesTable } from '@/lib/drizzle'
 import { getCurrentUser } from '@/lib/auth'
 import { desc, eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
+import { Metadata } from 'next'
 
-interface GalleryPageProps {
-  searchParams: { [key: string]: string | string[] | undefined }
+export const metadata: Metadata = {
+  title: 'Gallery - AI Images',
+  description: 'View your generated AI images',
 }
+
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
 export default async function GalleryPage({
   searchParams,
-}: GalleryPageProps) {
+}: {
+  searchParams: SearchParams
+}) {
   const currentUser = await getCurrentUser()
   
   if (!currentUser) {
@@ -25,7 +31,7 @@ export default async function GalleryPage({
     .limit(20)
 
   // Handle searchParams safely
-  const params = await Promise.resolve(searchParams)
+  const params = await searchParams
   const newImageId = typeof params?.new === 'string' ? params.new : undefined
 
   return (
