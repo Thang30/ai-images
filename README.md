@@ -1,49 +1,80 @@
----
-name: Vercel Postgres + Drizzle Next.js Starter
-slug: postgres-drizzle
-description: Simple Next.js template that uses Vercel Postgres as the database and Drizzle as the ORM.
-framework: Next.js
-useCase: Starter
-css: Tailwind
-database: Vercel Postgres
-deployUrl: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fstorage%2Fpostgres-drizzle&project-name=postgres-drizzle&repository-name=postgres-drizzle&demo-title=Vercel%20Postgres%20%2B%20Drizzle%20Next.js%20Starter&demo-description=Simple%20Next.js%20template%20that%20uses%20Vercel%20Postgres%20as%20the%20database%20and%20Drizzle%20as%20the%20ORM.&demo-url=https%3A%2F%2Fpostgres-drizzle.vercel.app%2F&demo-image=https%3A%2F%2Fpostgres-drizzle.vercel.app%2Fopengraph-image.png&stores=%5B%7B"type"%3A"postgres"%7D%5D
-demoUrl: https://postgres-drizzle.vercel.app/
-relatedTemplates:
-  - postgres-starter
-  - postgres-prisma
-  - postgres-kysely
----
+# AI Image Generation App
 
-# Vercel Postgres + Drizzle Next.js Starter
+A Next.js 15 application for generating and sharing AI-powered images using Vercel Postgres, Drizzle ORM, and FAL.ai.
 
-Simple Next.js template that uses [Vercel Postgres](https://vercel.com/postgres) as the database and [Drizzle](https://github.com/drizzle-team/drizzle-orm) as the ORM.
+![AI Image Generation App](./public/screenshots/hero.png)
 
-## Demo
+## Features
 
-https://postgres-drizzle.vercel.app/
+- 🎨 AI Image Generation with FAL.ai
+- 🔐 User Authentication
+- 💳 Credit System
+- 🖼️ Personal Image Gallery
+- 📱 Responsive Design
 
-## How to Use
+![Gallery View](./public/screenshots/gallery.png)
 
-You can choose from one of the following two methods to use this repository:
+## Tech Stack
 
-### One-Click Deploy
+- **Framework**: [Next.js 15](https://nextjs.org/)
+- **Database**: [Vercel Postgres](https://vercel.com/postgres)
+- **ORM**: [Drizzle](https://orm.drizzle.team/)
+- **AI**: [FAL.ai](https://fal.ai/)
+- **Storage**: [Tigris](https://www.tigrisdata.com/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Animation**: [Framer Motion](https://www.framer.com/motion/)
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=vercel-examples):
+## Getting Started
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fstorage%2Fpostgres-drizzle&project-name=postgres-drizzle&repository-name=postgres-drizzle&demo-title=Vercel%20Postgres%20%2B%20Drizzle%20Next.js%20Starter&demo-description=Simple%20Next.js%20template%20that%20uses%20Vercel%20Postgres%20as%20the%20database%20and%20Drizzle%20as%20the%20ORM.&demo-url=https%3A%2F%2Fpostgres-drizzle.vercel.app%2F&demo-image=https%3A%2F%2Fpostgres-drizzle.vercel.app%2Fopengraph-image.png&stores=%5B%7B"type"%3A"postgres"%7D%5D)
-
-### Clone and Deploy
-
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [pnpm](https://pnpm.io/installation) to bootstrap the example:
+1. Clone the repository:
 
 ```bash
-pnpm create next-app --example https://github.com/vercel/examples/tree/main/storage/postgres-drizzle
+git clone https://github.com/Thang30/ai-image-app.git
 ```
 
-Next, run Next.js in development mode:
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+or  
+
+```bash
+pnpm install
+```
+
+3. Set up environment variables:
+
+```bash
+cp .env.example .env
+```
+
+4. Run the development server:
+
+```bash
+npm run dev
+```
+
+or  
 
 ```bash
 pnpm dev
 ```
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=vercel-examples) ([Documentation](https://nextjs.org/docs/deployment)).
+## Environment Variables
+
+```bash
+POSTGRES_URL=your_postgres_url
+POSTGRES_URL_NON_POOLING=your_postgres_url_non_pooling
+POSTGRES_USER=your_postgres_user
+POSTGRES_HOST=your_postgres_host
+POSTGRES_PASSWORD=your_postgres_password
+POSTGRES_DATABASE=your_postgres_database
+FAL_KEY=your_fal_key
+AWS_ACCESS_KEY_ID=your_aws_access_key_id
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+AWS_ENDPOINT_URL_S3=your_aws_endpoint_url_s3
+AWS_ENDPOINT_URL_IAM=your_aws_endpoint_url_iam
+AWS_REGION=your_aws_region
+```
