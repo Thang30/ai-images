@@ -2,11 +2,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { db, ImagesTable } from '@/lib/drizzle'
+import { getCurrentUser } from '@/lib/auth'
+import { LogoutButton } from '@/components/LogoutButton'
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
+  const currentUser = await getCurrentUser()
   const images = await db.select().from(ImagesTable).orderBy(ImagesTable.created_at)
 
   return (
@@ -18,6 +21,16 @@ export default async function Home() {
           <div className="space-x-4">
             <Link href="/generate" className="text-gray-600 hover:text-black">Generate</Link>
             <Link href="/gallery" className="text-gray-600 hover:text-black">Gallery</Link>
+            {currentUser ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-gray-600">{currentUser.email}</span>
+                <LogoutButton />
+              </div>
+            ) : (
+              <Link href="/auth" className="text-gray-600 hover:text-black">
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </nav>
