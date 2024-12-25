@@ -1,8 +1,6 @@
 # AI Image Generation App
 
-A Next.js 15 application for generating and sharing AI-powered images using Vercel Postgres, Drizzle ORM, and FAL.ai.
-
-![AI Image Generation App](./public/screenshots/hero.png)
+A Next.js 15 application for generating and sharing AI-powered images using Vercel Postgres, Drizzle ORM, and FAL.ai. Checkout the live demo: [ai-images-alpha.vercel.app](https://ai-images-alpha.vercel.app/)
 
 ## Features
 
