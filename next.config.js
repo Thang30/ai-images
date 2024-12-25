@@ -8,7 +8,9 @@ const nextConfig = {
       'picsum.photos',
       'fal.ai',
       'cdn.fal.ai',
-      'fal.media'
+      'fal.media',
+      'fly.storage.tigris.dev',
+      'ai-image-app.fly.storage.tigris.dev',
     ],
   },
 }

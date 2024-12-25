@@ -3,15 +3,32 @@ import { getCurrentUser } from '@/lib/auth'
 import { db, ImagesTable, UsersTable } from '@/lib/drizzle'
 import { eq } from 'drizzle-orm'
 import { fal } from "@fal-ai/client"
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3"
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import fetch from 'node-fetch'
 
 if (!process.env.FAL_KEY) {
   throw new Error('FAL_KEY environment variable is not set')
+}
+
+if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+  throw new Error('AWS credentials are not set')
 }
 
 // Configure fal client with the correct credentials format
 fal.config({
   proxyUrl: "/api/fal/proxy",
   credentials: process.env.FAL_KEY,
+})
+
+// Configure S3 client for Tigris
+const s3Client = new S3Client({
+  endpoint: "https://fly.storage.tigris.dev",
+  region: "auto",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  }
 })
 
 export async function POST(request: Request) {
@@ -77,6 +94,31 @@ export async function POST(request: Request) {
       throw new Error('No image URL in response: ' + JSON.stringify(result))
     }
 
+    // Download image from FAL
+    const imageResponse = await fetch(imageUrl)
+    const imageBuffer = await imageResponse.arrayBuffer()
+
+    // Generate unique filename with user ID prefix for better access control
+    const filename = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.png`
+
+    // Upload to Tigris S3
+    await s3Client.send(new PutObjectCommand({
+      Bucket: "ai-image-app",
+      Key: filename,
+      Body: Buffer.from(imageBuffer),
+      ContentType: "image/png",
+      Metadata: {
+        userId: currentUser.id
+      }
+    }))
+
+    // Generate a presigned URL that expires in 1 hour
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: "ai-image-app",
+      Key: filename
+    })
+    const presignedUrl = await getSignedUrl(s3Client, getObjectCommand, { expiresIn: 3600 })
+
     // Use a transaction to ensure both operations succeed or fail together
     const dbResult = await db.transaction(async (tx) => {
       // Deduct credit first
@@ -99,7 +141,7 @@ export async function POST(request: Request) {
           negative_prompt,
           width,
           height,
-          image_url: imageUrl,
+          image_url: presignedUrl,
         })
         .returning()
 
@@ -117,4 +159,4 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   }
-} 
+}
