@@ -39,8 +39,8 @@ export function GenerateForm() {
       // Small delay to ensure refresh completes
       await new Promise(resolve => setTimeout(resolve, 100))
       
-      // Then navigate to home
-      router.push('/')
+      // Navigate to gallery with the new image ID
+      router.push(`/gallery?new=${data.image.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setIsLoading(false)

@@ -4,10 +4,13 @@ import { getCurrentUser } from '@/lib/auth'
 import { desc, eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
 
-export default async function GalleryPage() {
+export default async function GalleryPage({
+  searchParams,
+}: {
+  searchParams: { new?: string }
+}) {
   const currentUser = await getCurrentUser()
   
-  // Redirect to auth if not logged in
   if (!currentUser) {
     redirect('/auth')
   }
@@ -25,7 +28,17 @@ export default async function GalleryPage() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {images.map((image) => (
-          <div key={image.id} className="bg-white rounded-lg overflow-hidden shadow-sm">
+          <div 
+            key={image.id} 
+            className="bg-white rounded-lg overflow-hidden shadow-sm relative"
+          >
+            {searchParams.new === image.id && (
+              <div className="absolute top-4 right-4 z-10">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  Newly Generated
+                </span>
+              </div>
+            )}
             <div className="aspect-square relative">
               <Image 
                 src={image.image_url}
