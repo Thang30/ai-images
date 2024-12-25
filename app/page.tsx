@@ -1,98 +1,75 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import Table from '@/components/table'
-import TablePlaceholder from '@/components/table-placeholder'
-import ExpandingArrow from '@/components/expanding-arrow'
+import { db, ImagesTable } from '@/lib/drizzle'
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
-export default function Home() {
+export default async function Home() {
+  const images = await db.select().from(ImagesTable).orderBy(ImagesTable.created_at)
+
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center">
-      <Link
-        href="https://vercel.com/templates/next.js/postgres-drizzle"
-        className="group mt-20 sm:mt-0 rounded-full flex space-x-1 bg-white/30 shadow-sm ring-1 ring-gray-900/5 text-gray-600 text-sm font-medium px-10 py-2 hover:shadow-lg active:shadow-sm transition-all"
-      >
-        <p>Deploy your own to Vercel</p>
-        <ExpandingArrow />
-      </Link>
-      <h1 className="pt-4 pb-8 bg-gradient-to-br from-black via-[#171717] to-[#4b4b4b] bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-7xl">
-        Postgres on Vercel
-      </h1>
-      <Suspense fallback={<TablePlaceholder />}>
-        <Table />
-      </Suspense>
-      <p className="font-light text-gray-600 w-full max-w-lg text-center mt-6">
-        <Link
-          href="https://vercel.com/postgres"
-          className="font-medium underline underline-offset-4 hover:text-black transition-colors"
-        >
-          Vercel Postgres
-        </Link>{' '}
-        demo with{' '}
-        <Link
-          href="https://github.com/drizzle-team/drizzle-orm"
-          className="font-medium underline underline-offset-4 hover:text-black transition-colors"
-        >
-          Drizzle
-        </Link>{' '}
-        as the ORM. <br /> Built with{' '}
-        <Link
-          href="https://nextjs.org/docs"
-          className="font-medium underline underline-offset-4 hover:text-black transition-colors"
-        >
-          Next.js App Router
-        </Link>
-        .
-      </p>
+    <main className="min-h-screen flex flex-col">
+      {/* Navigation */}
+      <nav className="w-full p-4 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <Link href="/" className="text-xl font-bold">AI Images</Link>
+          <div className="space-x-4">
+            <Link href="/generate" className="text-gray-600 hover:text-black">Generate</Link>
+            <Link href="/gallery" className="text-gray-600 hover:text-black">Gallery</Link>
+          </div>
+        </div>
+      </nav>
 
-      <div className="flex justify-center space-x-5 pt-10 mt-10 border-t border-gray-300 w-full max-w-xl text-gray-600">
-        <Link
-          href="https://postgres-prisma.vercel.app/"
-          className="font-medium underline underline-offset-4 hover:text-black transition-colors"
-        >
-          Prisma
-        </Link>
-        <Link
-          href="https://postgres-starter.vercel.app/"
-          className="font-medium underline underline-offset-4 hover:text-black transition-colors"
-        >
-          Starter
-        </Link>
-        <Link
-          href="https://postgres-kysely.vercel.app/"
-          className="font-medium underline underline-offset-4 hover:text-black transition-colors"
-        >
-          Kysely
-        </Link>
+      {/* Main Content */}
+      <div className="flex-grow p-8 max-w-7xl mx-auto w-full">
+        <h1 className="text-3xl font-bold mb-8">Generated Images</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {images.map((image) => (
+            <div key={image.id} className="border rounded-lg overflow-hidden">
+              <div className="aspect-square relative">
+                <Image 
+                  src={image.image_url}
+                  alt={image.prompt}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <p className="text-sm text-gray-600">Prompt: {image.prompt}</p>
+                {image.negative_prompt && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Negative: {image.negative_prompt}
+                  </p>
+                )}
+                <p className="text-xs text-gray-400 mt-2">
+                  {new Date(image.created_at).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="sm:absolute sm:bottom-0 w-full px-20 py-10 flex justify-between">
-        <Link href="https://vercel.com">
-          <Image
-            src="/vercel.svg"
-            alt="Vercel Logo"
-            width={100}
-            height={24}
-            priority
-          />
-        </Link>
-        <Link
-          href="https://github.com/vercel/examples/tree/main/storage/postgres-drizzle"
-          className="flex items-center space-x-2"
-        >
-          <Image
-            src="/github.svg"
-            alt="GitHub Logo"
-            width={24}
-            height={24}
-            priority
-          />
-          <p className="font-light">Source</p>
-        </Link>
-      </div>
+      {/* Footer */}
+      <footer className="w-full bg-gray-50 border-t">
+        <div className="max-w-7xl mx-auto py-6 px-4 flex justify-between items-center">
+          <p className="text-sm text-gray-600">© 2024 AI Images. All rights reserved.</p>
+          <div className="flex items-center space-x-4">
+            <Link href="/about" className="text-sm text-gray-600 hover:text-black">
+              About
+            </Link>
+            <Link href="/privacy" className="text-sm text-gray-600 hover:text-black">
+              Privacy
+            </Link>
+            <Link href="/terms" className="text-sm text-gray-600 hover:text-black">
+              Terms
+            </Link>
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }
