@@ -1,6 +1,6 @@
 # AI Image Generation App
 
-A Next.js 15 application for generating and sharing AI-powered images using Vercel Postgres, Drizzle ORM, and FAL.ai. Checkout the live demo: [ai-images-alpha.vercel.app](https://ai-images-alpha.vercel.app/)
+A Next.js 15 application for generating and sharing AI-powered images using Neon Postgres, Drizzle ORM, and FAL.ai. Checkout the live demo: [ai-images-alpha.vercel.app](https://ai-images-alpha.vercel.app/)
 
 ## Features
 
@@ -16,12 +16,34 @@ A Next.js 15 application for generating and sharing AI-powered images using Verc
 ## Tech Stack
 
 - **Framework**: [Next.js 15](https://nextjs.org/)
-- **Database**: [Vercel Postgres](https://vercel.com/postgres)
+- **Database**: [Neon Postgres](https://neon.tech/) - Serverless Postgres with automatic scaling
 - **ORM**: [Drizzle](https://orm.drizzle.team/)
 - **AI**: [FAL.ai](https://fal.ai/)
 - **Storage**: [Tigris](https://www.tigrisdata.com/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Animation**: [Framer Motion](https://www.framer.com/motion/)
+
+## Database Setup
+
+1. Create a Neon database:
+   - Sign up at [console.neon.tech](https://console.neon.tech)
+   - Create a new project
+   - Copy your database connection string
+
+2. Add the following to your `.env`:
+```bash
+DATABASE_URL=postgres://[user]:[password]@[neon_hostname]/[dbname]?sslmode=require
+```
+
+3. Initialize the database:
+```bash
+pnpm db:push
+```
+
+4. Seed the database (optional):
+```bash
+pnpm db:seed
+```
 
 ## Getting Started
 
